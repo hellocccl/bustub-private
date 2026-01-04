@@ -12,133 +12,82 @@
 
 #pragma once
 
+#include <deque>
 #include <limits>
 #include <list>
 #include <mutex>  // NOLINT
 #include <unordered_map>
 #include <vector>
-
 #include "common/config.h"
 #include "common/macros.h"
 
 namespace bustub {
 
 /**
- * LRUKReplacer implements the LRU-k replacement policy.
+ * LRUKReplacer 实现了 LRU-k 页面置换策略。
  *
- * The LRU-k algorithm evicts a frame whose backward k-distance is maximum
- * of all frames. Backward k-distance is computed as the difference in time between
- * current timestamp and the timestamp of kth previous access.
+ * LRU-k 算法会淘汰 backward k-distance 最大的 frame。
+ * backward k-distance 定义为：当前时间戳与第 k 次最近访问时间戳之差。
  *
- * A frame with less than k historical references is given
- * +inf as its backward k-distance. When multiple frames have +inf backward k-distance,
- * classical LRU algorithm is used to choose victim.
+ * 访问次数少于 k 次的 frame，其 backward k-distance 视为 +∞。
+ * 若多个 frame 的 backward k-distance 为 +∞，
+ * 则退化为经典 LRU，选择最早访问的 frame。
  */
 class LRUKReplacer {
  public:
   /**
-   *
-   * TODO(P1): Add implementation
-   *
-   * @brief a new LRUKReplacer.
-   * @param num_frames the maximum number of frames the LRUReplacer will be required to store
+   * @brief 构造一个新的 LRUKReplacer
+   * @param num_frames replacer 可管理的最大 frame 数
+   * @param k LRU-k 中的 k
    */
   explicit LRUKReplacer(size_t num_frames, size_t k);
 
   DISALLOW_COPY_AND_MOVE(LRUKReplacer);
 
-  /**
-   * TODO(P1): Add implementation
-   *
-   * @brief Destroys the LRUReplacer.
-   */
   ~LRUKReplacer() = default;
 
   /**
-   * TODO(P1): Add implementation
-   *
-   * @brief Find the frame with largest backward k-distance and evict that frame. Only frames
-   * that are marked as 'evictable' are candidates for eviction.
-   *
-   * A frame with less than k historical references is given +inf as its backward k-distance.
-   * If multiple frames have inf backward k-distance, then evict the frame with the earliest
-   * timestamp overall.
-   *
-   * Successful eviction of a frame should decrement the size of replacer and remove the frame's
-   * access history.
-   *
-   * @param[out] frame_id id of frame that is evicted.
-   * @return true if a frame is evicted successfully, false if no frames can be evicted.
+   * @brief 找到 backward k-distance 最大的 frame 并将其淘汰
+   * @param[out] frame_id 被淘汰的 frame id
+   * @return 是否成功淘汰
    */
   auto Evict(frame_id_t *frame_id) -> bool;
 
   /**
-   * TODO(P1): Add implementation
-   *
-   * @brief Record the event that the given frame id is accessed at current timestamp.
-   * Create a new entry for access history if frame id has not been seen before.
-   *
-   * If frame id is invalid (ie. larger than replacer_size_), throw an exception. You can
-   * also use BUSTUB_ASSERT to abort the process if frame id is invalid.
-   *
-   * @param frame_id id of frame that received a new access.
+   * @brief 记录 frame 的一次访问
+   * @param frame_id 被访问的 frame id
    */
   void RecordAccess(frame_id_t frame_id);
 
   /**
-   * TODO(P1): Add implementation
-   *
-   * @brief Toggle whether a frame is evictable or non-evictable. This function also
-   * controls replacer's size. Note that size is equal to number of evictable entries.
-   *
-   * If a frame was previously evictable and is to be set to non-evictable, then size should
-   * decrement. If a frame was previously non-evictable and is to be set to evictable,
-   * then size should increment.
-   *
-   * If frame id is invalid, throw an exception or abort the process.
-   *
-   * For other scenarios, this function should terminate without modifying anything.
-   *
-   * @param frame_id id of frame whose 'evictable' status will be modified
-   * @param set_evictable whether the given frame is evictable or not
+   * @brief 设置 frame 是否可被淘汰
+   * @param frame_id frame id
+   * @param set_evictable 是否可淘汰
    */
   void SetEvictable(frame_id_t frame_id, bool set_evictable);
 
   /**
-   * TODO(P1): Add implementation
-   *
-   * @brief Remove an evictable frame from replacer, along with its access history.
-   * This function should also decrement replacer's size if removal is successful.
-   *
-   * Note that this is different from evicting a frame, which always remove the frame
-   * with largest backward k-distance. This function removes specified frame id,
-   * no matter what its backward k-distance is.
-   *
-   * If Remove is called on a non-evictable frame, throw an exception or abort the
-   * process.
-   *
-   * If specified frame is not found, directly return from this function.
-   *
-   * @param frame_id id of frame to be removed
+   * @brief 从 replacer 中移除指定 frame
+   * @param frame_id frame id
    */
   void Remove(frame_id_t frame_id);
 
   /**
-   * TODO(P1): Add implementation
-   *
-   * @brief Return replacer's size, which tracks the number of evictable frames.
-   *
-   * @return size_t
+   * @brief 返回当前可淘汰 frame 的数量
    */
   auto Size() -> size_t;
 
  private:
-  // TODO(student): implement me! You can replace these member variables as you like.
-  // Remove maybe_unused if you start using them.
-  [[maybe_unused]] size_t current_timestamp_{0};
-  [[maybe_unused]] size_t curr_size_{0};
-  [[maybe_unused]] size_t replacer_size_;
-  [[maybe_unused]] size_t k_;
+  struct FrameInfo {
+    std::deque<size_t> history_;  // 时间戳历史，最旧在前，最新在后，最多保留 k_ 个
+    bool evictable_{false};
+  };
+
+  size_t current_timestamp_{0};
+  size_t curr_size_{0};
+  size_t replacer_size_;
+  size_t k_;
+  std::unordered_map<frame_id_t, FrameInfo> records_;
   std::mutex latch_;
 };
 

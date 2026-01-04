@@ -12,7 +12,7 @@
 /**
  * extendible_hash_table.h
  *
- * Implementation of in-memory hash table using extendible hashing
+ * 使用可扩展哈希（extendible hashing）实现的内存哈希表
  */
 
 #pragma once
@@ -28,9 +28,9 @@
 namespace bustub {
 
 /**
- * ExtendibleHashTable implements a hash table using the extendible hashing algorithm.
- * @tparam K key type
- * @tparam V value type
+ * ExtendibleHashTable 使用可扩展哈希算法实现哈希表。
+ * @tparam K 键类型
+ * @tparam V 值类型
  */
 template <typename K, typename V>
 class ExtendibleHashTable : public HashTable<K, V> {
@@ -45,21 +45,21 @@ class ExtendibleHashTable : public HashTable<K, V> {
   explicit ExtendibleHashTable(size_t bucket_size);
 
   /**
-   * @brief Get the global depth of the directory.
-   * @return The global depth of the directory.
+   * @brief 获取目录的全局深度。
+   * @return 目录的全局深度。
    */
   auto GetGlobalDepth() const -> int;
 
   /**
-   * @brief Get the local depth of the bucket that the given directory index points to.
-   * @param dir_index The index in the directory.
-   * @return The local depth of the bucket.
+   * @brief 获取给定目录索引指向的桶的局部深度。
+   * @param dir_index 目录中的索引。
+   * @return 桶的局部深度。
    */
   auto GetLocalDepth(int dir_index) const -> int;
 
   /**
-   * @brief Get the number of buckets in the directory.
-   * @return The number of buckets in the directory.
+   * @brief 获取目录中桶的数量。
+   * @return 目录中桶的数量。
    */
   auto GetNumBuckets() const -> int;
 
@@ -67,13 +67,13 @@ class ExtendibleHashTable : public HashTable<K, V> {
    *
    * TODO(P1): Add implementation
    *
-   * @brief Find the value associated with the given key.
+   * @brief 查找与给定键关联的值。
    *
-   * Use IndexOf(key) to find the directory index the key hashes to.
+   * 使用 IndexOf(key) 找到键哈希到的目录索引。
    *
-   * @param key The key to be searched.
-   * @param[out] value The value associated with the key.
-   * @return True if the key is found, false otherwise.
+   * @param key 要查找的键。
+   * @param[out] value 与键关联的值。
+   * @return 找到返回 true，否则返回 false。
    */
   auto Find(const K &key, V &value) -> bool override;
 
@@ -81,16 +81,16 @@ class ExtendibleHashTable : public HashTable<K, V> {
    *
    * TODO(P1): Add implementation
    *
-   * @brief Insert the given key-value pair into the hash table.
-   * If a key already exists, the value should be updated.
-   * If the bucket is full and can't be inserted, do the following steps before retrying:
-   *    1. If the local depth of the bucket is equal to the global depth,
-   *        increment the global depth and double the size of the directory.
-   *    2. Increment the local depth of the bucket.
-   *    3. Split the bucket and redistribute directory pointers & the kv pairs in the bucket.
+   * @brief 将给定的键值对插入哈希表。
+   * 如果键已存在，应更新其值。
+   * 如果桶已满且无法插入，重试前执行以下步骤：
+   *    1. 如果该桶的局部深度等于全局深度，
+   *       则增加全局深度并将目录大小加倍。
+   *    2. 增加该桶的局部深度。
+   *    3. 拆分该桶并重新分配目录指针以及桶内的键值对。
    *
-   * @param key The key to be inserted.
-   * @param value The value to be inserted.
+   * @param key 要插入的键。
+   * @param value 要插入的值。
    */
   void Insert(const K &key, const V &value) override;
 
@@ -98,10 +98,10 @@ class ExtendibleHashTable : public HashTable<K, V> {
    *
    * TODO(P1): Add implementation
    *
-   * @brief Given the key, remove the corresponding key-value pair in the hash table.
-   * Shrink & Combination is not required for this project
-   * @param key The key to be deleted.
-   * @return True if the key exists, false otherwise.
+   * @brief 根据键在哈希表中删除对应的键值对。
+   * 本项目不要求执行收缩和合并操作。
+   * @param key 要删除的键。
+   * @return 如果键存在返回 true，否则返回 false。
    */
   auto Remove(const K &key) -> bool override;
 
@@ -112,13 +112,13 @@ class ExtendibleHashTable : public HashTable<K, V> {
    public:
     explicit Bucket(size_t size, int depth = 0);
 
-    /** @brief Check if a bucket is full. */
+    /** @brief 检查桶是否已满。 */
     inline auto IsFull() const -> bool { return list_.size() == size_; }
 
-    /** @brief Get the local depth of the bucket. */
+    /** @brief 获取桶的局部深度。 */
     inline auto GetDepth() const -> int { return depth_; }
 
-    /** @brief Increment the local depth of a bucket. */
+    /** @brief 增加桶的局部深度。 */
     inline void IncrementDepth() { depth_++; }
 
     inline auto GetItems() -> std::list<std::pair<K, V>> & { return list_; }
@@ -127,10 +127,10 @@ class ExtendibleHashTable : public HashTable<K, V> {
      *
      * TODO(P1): Add implementation
      *
-     * @brief Find the value associated with the given key in the bucket.
-     * @param key The key to be searched.
-     * @param[out] value The value associated with the key.
-     * @return True if the key is found, false otherwise.
+     * @brief 在桶中查找与给定键关联的值。
+     * @param key 要查找的键。
+     * @param[out] value 与键关联的值。
+     * @return 找到返回 true，否则返回 false。
      */
     auto Find(const K &key, V &value) -> bool;
 
@@ -138,9 +138,9 @@ class ExtendibleHashTable : public HashTable<K, V> {
      *
      * TODO(P1): Add implementation
      *
-     * @brief Given the key, remove the corresponding key-value pair in the bucket.
-     * @param key The key to be deleted.
-     * @return True if the key exists, false otherwise.
+     * @brief 根据键在桶中删除对应的键值对。
+     * @param key 要删除的键。
+     * @return 如果键存在返回 true，否则返回 false。
      */
     auto Remove(const K &key) -> bool;
 
@@ -148,12 +148,12 @@ class ExtendibleHashTable : public HashTable<K, V> {
      *
      * TODO(P1): Add implementation
      *
-     * @brief Insert the given key-value pair into the bucket.
-     *      1. If a key already exists, the value should be updated.
-     *      2. If the bucket is full, do nothing and return false.
-     * @param key The key to be inserted.
-     * @param value The value to be inserted.
-     * @return True if the key-value pair is inserted, false otherwise.
+     * @brief 将给定的键值对插入到桶中。
+     *      1. 如果键已存在，则应更新其值。
+     *      2. 如果桶已满，则不做任何操作并返回 false。
+     * @param key 要插入的键。
+     * @param value 要插入的值。
+     * @return 插入成功返回 true，否则返回 false。
      */
     auto Insert(const K &key, const V &value) -> bool;
 
