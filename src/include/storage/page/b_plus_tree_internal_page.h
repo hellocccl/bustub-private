@@ -11,6 +11,8 @@
 #pragma once
 
 #include <queue>
+#include <string>
+#include <vector>
 
 #include "storage/page/b_plus_tree_page.h"
 
@@ -41,9 +43,75 @@ class BPlusTreeInternalPage : public BPlusTreePage {
   auto KeyAt(int index) const -> KeyType;
   void SetKeyAt(int index, const KeyType &key);
   auto ValueAt(int index) const -> ValueType;
+  /**
+   * @brief Get the adjacent(the next by default) node of the value.
+   *
+   * @param value The in-parent-value of the node.
+   *
+   * @return If node is the last one, the front node of it
+   * will be returned. Otherwise, the next one.
+   */
+  auto Adjacent(const ValueType &value) -> ValueType;
+
+  /**
+   * @brief Get the relationship between the v and v_other.
+   *
+   * @param v The value used to be compared.
+   * @param v_other The other value
+   * @return True if v_other is the predecessor of v. Otherwise, return false.
+   */
+  auto IsPredecessor(const ValueType &v, const ValueType &v_other) -> bool;
+
+  /**
+   * @brief Get the key index whose key is between va and vb.
+   *
+   * @param va First value
+   * @param vb Second value
+   * @return The key index.
+   */
+  auto BetweenKeyIndex(const ValueType &va, const ValueType &vb) const -> int;
+  /**
+   * @brief Insert the pair(new_key,new_value) after value.
+   *
+   * @param value
+   * @param new_key
+   * @param new_value
+   */
+  void InsertAfter(const ValueType &value, const KeyType &new_key, const ValueType &new_value);
+
+  void PushBack(const KeyType &key, const ValueType &value);
+
+  void PushFront(const ValueType &value);
+
+  void Put(const ValueType &left, const KeyType &key, const ValueType &right);
+
+  auto ExtractHalf() -> std::vector<MappingType>;
+
+  /**
+   * @brife Used for coalescing and let size be 0.
+   *
+   * @return All pairs.
+   */
+  auto ExtractAll() -> std::vector<MappingType>;
+
+  void EmplaceBack(const std::vector<MappingType> &pairs);
+
+  void Remove(const KeyType &key, const KeyComparator &comparator);
+  /**
+   * @brife Pop the last pair and decrease the size.
+   *
+   * @return The back pair.
+   */
+  auto PopBack() -> MappingType;
+
+  auto PopFront() -> MappingType;
+
+  inline auto Get() -> MappingType * { return array_; }
 
  private:
+  auto KeyToString(const KeyType &key) const -> std::string;
+
   // Flexible array member for page data.
-  MappingType array_[1];
+  MappingType array_[(INTERNAL_PAGE_SIZE - INTERNAL_PAGE_HEADER_SIZE) / sizeof(MappingType)];
 };
 }  // namespace bustub

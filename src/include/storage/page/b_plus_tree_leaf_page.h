@@ -49,10 +49,53 @@ class BPlusTreeLeafPage : public BPlusTreePage {
   auto GetNextPageId() const -> page_id_t;
   void SetNextPageId(page_id_t next_page_id);
   auto KeyAt(int index) const -> KeyType;
+  auto ValueAt(int index) const -> ValueType;
+
+  auto Contain(const KeyType &key, const KeyComparator &comparator) -> bool;
+
+  /**
+   * @brife Insert the new kv pair in the proper position of the array and size will increase if size<=max_size .
+   * Otherwise, the function just returns.
+   *
+   * @param key The key
+   * @param value The value
+   *
+   * @note Check the size with the max size before invocation.
+   */
+  void Insert(const KeyType &key, const ValueType &value, const KeyComparator &comparator);
+
+  void Remove(const KeyType &key, const KeyComparator &comparator);
+
+  /**
+   * @brief ExtractHalf return half of the elements which is useful in splitting.
+   *
+   * @return Half of the elements.
+   */
+  auto ExtractHalf() -> std::vector<MappingType>;
+
+  /**
+   * @brife Used for coalescing and let size be 0.
+   *
+   * @return All pairs.
+   */
+  auto ExtractAll() -> std::vector<MappingType>;
+
+  void EmplaceBack(const std::vector<MappingType> &paris);
+
+  /**
+   * @brife Pop the last pair and decrease the size.
+   *
+   * @return The back pair.
+   */
+  auto PopBack() -> MappingType;
+
+  auto PopFront() -> MappingType;
+
+  inline auto Get() -> MappingType * { return array_; }
 
  private:
   page_id_t next_page_id_;
   // Flexible array member for page data.
-  MappingType array_[1];
+  MappingType array_[(LEAF_PAGE_SIZE - LEAF_PAGE_HEADER_SIZE) / sizeof(MappingType)];
 };
 }  // namespace bustub
