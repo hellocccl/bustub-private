@@ -12,8 +12,8 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
-
 #include "common/rid.h"
 #include "execution/executor_context.h"
 #include "execution/executors/abstract_executor.h"
@@ -44,5 +44,8 @@ class IndexScanExecutor : public AbstractExecutor {
  private:
   /** The index scan plan node to be executed. */
   const IndexScanPlanNode *plan_;
+  BPlusTreeIndexForOneIntegerColumn *index_;
+  std::unique_ptr<BPlusTreeIndexIteratorForOneIntegerColumn> iterator_;
+  TableHeap *table_heap_;
 };
 }  // namespace bustub

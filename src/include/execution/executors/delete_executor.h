@@ -13,9 +13,9 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
-
 #include "execution/executor_context.h"
 #include "execution/executors/abstract_executor.h"
 #include "execution/plans/delete_plan.h"
@@ -60,5 +60,10 @@ class DeleteExecutor : public AbstractExecutor {
   const DeletePlanNode *plan_;
   /** The child executor from which RIDs for deleted tuples are pulled */
   std::unique_ptr<AbstractExecutor> child_executor_;
+  TableInfo *table_info_;
+  TableHeap *table_heap_;
+  std::unique_ptr<TableIterator> iterator_;
+  std::string table_name_;
+  bool successful_{false};
 };
 }  // namespace bustub
