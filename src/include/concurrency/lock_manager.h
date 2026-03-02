@@ -48,7 +48,6 @@ class LockManager {
         : txn_id_(txn_id), lock_mode_(lock_mode), oid_(oid) {}
     LockRequest(txn_id_t txn_id, LockMode lock_mode, table_oid_t oid, RID rid) /** Row lock request */
         : txn_id_(txn_id), lock_mode_(lock_mode), oid_(oid), rid_(rid) {}
-
     /** Txn_id of the txn requesting the lock */
     txn_id_t txn_id_;
     /** Locking mode of the requested lock */
@@ -63,6 +62,14 @@ class LockManager {
 
   class LockRequestQueue {
    public:
+    LockRequestQueue() = default;
+    ~LockRequestQueue() {
+      for (auto iter = request_queue_.begin(); iter != request_queue_.end();) {
+        auto i = *iter;
+        request_queue_.erase(iter++);
+        delete i;
+      }
+    }
     /** List of lock requests for the same resource (table or row) */
     std::list<LockRequest *> request_queue_;
     /** For notifying blocked transactions on this rid */
@@ -71,6 +78,8 @@ class LockManager {
     txn_id_t upgrading_ = INVALID_TXN_ID;
     /** coordination */
     std::mutex latch_;
+    auto GrantLockForTable(Transaction *txn, LockMode lock_mode) -> bool;
+    auto GrantLockForRow(Transaction *txn, LockMode lock_mode) -> bool;
   };
 
   /**
@@ -296,6 +305,8 @@ class LockManager {
    * Runs cycle detection in the background.
    */
   auto RunCycleDetection() -> void;
+
+  auto DFS(std::vector<txn_id_t> cycle_vector, bool &is_cycle, txn_id_t *txn_id) -> void;
 
  private:
   /** Fall 2022 */
