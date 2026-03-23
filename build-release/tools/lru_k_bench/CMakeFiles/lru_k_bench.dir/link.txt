@@ -1,0 +1,1 @@
+/usr/bin/c++  -O3 -DNDEBUG   CMakeFiles/lru_k_bench.dir/lru_k_bench.cpp.o  -o ../../bin/bustub-lru-k-bench  ../../lib/libbustub.a ../../lib/libbustub_murmur3.a ../../lib/libduckdb_pg_query.a ../../lib/libfmt.a ../../lib/libfort.a -lpthread 

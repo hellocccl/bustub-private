@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/liu/bustub-private/third_party/murmur3/MurmurHash3.cpp
+MurmurHash3.h
+/home/liu/bustub-private/third_party/murmur3/MurmurHash3.h
+stdlib.h
+-
+
+/home/liu/bustub-private/third_party/murmur3/MurmurHash3.h
+string
+-
+stdint.h
+-
+

@@ -1,0 +1,5 @@
+if(EXISTS "/home/liu/bustub-private/build-release/test/lock_manager_test[1]_tests.cmake")
+  include("/home/liu/bustub-private/build-release/test/lock_manager_test[1]_tests.cmake")
+else()
+  add_test(lock_manager_test_NOT_BUILT lock_manager_test_NOT_BUILT)
+endif()
