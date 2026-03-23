@@ -1,5 +1,0 @@
-if(EXISTS "/home/liu/bustub-private/build-release/test/type_test[1]_tests.cmake")
-  include("/home/liu/bustub-private/build-release/test/type_test[1]_tests.cmake")
-else()
-  add_test(type_test_NOT_BUILT type_test_NOT_BUILT)
-endif()

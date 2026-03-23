@@ -179,7 +179,6 @@ auto GenerateMixedTrace(const BenchConfig &config) -> std::vector<page_id_t> {
   std::mt19937_64 generator(config.seed_);
   std::vector<page_id_t> trace;
   trace.reserve(config.ops_);
-
   size_t scan_cursor = 0;
   while (trace.size() < config.ops_) {
     for (size_t i = 0; i < config.scan_burst_ && trace.size() < config.ops_; i++) {
